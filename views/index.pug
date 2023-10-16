@@ -1,0 +1,45 @@
+extends layouts/layout 
+
+block main
+  section.todoapp
+    include ./includes/header
+    section.top.container
+      .new-todo
+        .title
+          h1 todos
+          include ./includes/loading
+        form(hx-post="/todos" hx-target="#todo-list" hx-swap="afterbegin" _="on htmx:afterOnLoad set #txtTodo.value to ''")
+          input#txtTodo.new-todo-input(name="todo" placeholder='What needs to be done?' autofocus='')
+    // This section should be hidden by default and shown when there are todos
+    section.main.container
+      //TODO: add this functionality
+      //input#toggle-all.toggle-all(type='checkbox')
+      //label(for='toggle-all') Mark all as complete
+      form.todo-list(hx-post="todos/reorder" hx-trigger="end" hx-swap="none")
+        ul#todo-list.todo-list
+          // These are here just to show the structure of the list items
+          // List items should get the class `editing` when editing and `completed` when marked as completed
+          each todo in todos
+            include includes/todo-item
+
+    // This footer should be hidden by default and shown when there are todos
+    footer.footer.container
+      // This should be `0 items left` by default
+      include includes/item-count
+      // Remove this if you don't implement routing
+      ul.filters
+        li
+          a(href='/?filter=all', class={selected : filter === 'all'}) All
+        li
+          a(href='/?filter=active', class={selected: filter === 'active'}) Active
+        li
+          a(href='/?filter=completed', class={selected: filter === 'completed'}) Completed
+      // Hidden if no completed items are left ↓
+      button.clear-completed(hx-post="/todos/clear-completed" hx-target='#todo-list') Clear completed
+
+  include ./includes/footer
+  // Scripts here. Don't remove ↓
+  script(src="https://unpkg.com/htmx.org@1.9.6" integrity="sha384-FhXw7b6AlE/jyjlZH5iHa/tTe9EpJ1Y55RjcgPbjeWMskSxZt1v9qkxLJWNJaGni" crossorigin="anonymous")
+  script(src="https://unpkg.com/hyperscript.org@0.9.11")
+  script(src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js")
+  script(src="js/sortable.js")

@@ -1,0 +1,9 @@
+span#todo-count.todo-count(hx-swap-oob="true")
+  p
+    if itemsLeft == 1
+      | Only
+      strong  #{itemsLeft}
+      |  item left!
+    else 
+      strong #{itemsLeft}
+      |  items left
