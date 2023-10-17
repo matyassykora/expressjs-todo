@@ -80,7 +80,10 @@ app.post('/todos', (req, res) => {
 
 // TODO: fix reordering while in 'active' filter deleting items
 // it's disabled for now
-//new code:
+/* 
+idea:  maybe keep a different list of todos for each filter mode and 
+then sync when swapping?
+*/
 app.post('/todos/reorder', (req, res) => {
   var { ids } = req.body
   var { names } = req.body
