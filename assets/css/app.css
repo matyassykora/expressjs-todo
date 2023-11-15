@@ -82,7 +82,9 @@ nav {
 }
 
 .title {
-    display: inline-flex;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
 }
 
 .loading {
@@ -91,7 +93,6 @@ nav {
 
 .todo-list {
     list-style-type: none;
-    padding: 0;
     position: relative;
     left: 325px;
 }
@@ -105,7 +106,6 @@ nav {
 #todo-list>li>div>label:hover {
     cursor: pointer;
     background-color: lightpink;
-
 }
 
 .toggle {
@@ -121,10 +121,6 @@ nav {
     display: inline-block;
     position: relative;
     border-radius: 15px;
-}
-
-.toggle:checked+label {
-    text-decoration: line-through;
 }
 
 .toggle:checked:active,
@@ -151,8 +147,6 @@ nav {
 .toggle:hover {
     cursor: pointer;
 }
-
-
 
 .destroy {
     vertical-align: 2px;
@@ -181,26 +175,11 @@ nav {
 }
 
 .filters {
-    list-style-type: none;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
     padding: 0;
     margin: 10px;
-}
-
-.filters li {
-    display: inline;
-    margin-right: 15px;
-}
-
-.filters>li>a {
-    text-decoration: none;
-    color: brown;
-    border: 1px solid gray;
-    padding: 5px;
-    border-radius: 5px;
-}
-
-.filters>li>a:hover {
-    background-color: lightpink;
 }
 
 .footer {
@@ -208,9 +187,8 @@ nav {
     margin-bottom: 25px;
 }
 
-footer {
-    display: flex;
-    justify-content: space-evenly;
+.bottom {
+    display: flexbox;
 }
 
 .info {
@@ -226,22 +204,65 @@ footer {
     width: 100%;
 }
 
-.todo-count>p {
+.todo-count {
     position: relative;
-    top: 50%;
-    -ms-transform: translateY(-50%);
-    -webkit-transform: translateY(-50%);
-    transform: translateY(-50%);
 }
 
-.clear-completed {
-    background-color: rgb(69, 214, 207);
-    border: 0;
-}
-
-.clear-completed:hover {
-    background-color: lightpink;
+.btn {
+    background: 0;
     cursor: pointer;
+    text-decoration: none;
+    color: brown;
+    border: 1px solid gray;
+    padding: 5px;
+    border-radius: 0px;
+    transition: 0.3s ease-in-out;
+    &::before,
+    &::after {
+        background: lightpink;
+  }
+}
+
+.btn:hover{
+    background: lightpink;
+    border-radius: 0;
+    scale: 1.1;
+}
+
+.btn-transition::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  transition: 0.3s ease-in-out; 
+}
+
+.btn-transition::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  transition: 0.3s ease-in-out; 
+  height: 100%;
+  width: 0;
+  top: 0;
+  left: 0;
+}
+
+.btn-transition:hover::after { 
+  width: 100%; 
+}
+
+.strike,
+.strike-transition {
+    --thickness: 2px;
+    --strike: 0;
+    background: linear-gradient(90deg, transparent, currentColor 0) no-repeat right center / calc(var(--strike) * 100%) var(--thickness);
+    background-position-y: 60%;
+    transition: background-size .2s ease-out;
+}
+
+.strike-transition {
+    --strike: 1;
+    background-position-x: left;
 }
 
 /* 2xl */

@@ -6,8 +6,10 @@ block main
     section.top.container
       .new-todo
         .title
-          h1 todos
+          | todos
           include ./includes/loading
+          // This should be `0 items left` by default
+          include includes/item-count
         form(hx-post="/todos" hx-target="#todo-list" hx-swap="afterbegin" _="on htmx:afterOnLoad set #txtTodo.value to ''")
           input#txtTodo.new-todo-input(name="todo" placeholder='What needs to be done?' autofocus='')
     // This section should be hidden by default and shown when there are todos
@@ -23,22 +25,17 @@ block main
             include includes/todo-item
 
     // This footer should be hidden by default and shown when there are todos
-    footer.footer.container
-      // This should be `0 items left` by default
-      include includes/item-count
+    section.bottom.container
       // Remove this if you don't implement routing
-      ul.filters
-        li
-          a(href='/?filter=all', class={selected : filter === 'all'}) All
-        li
-          a(href='/?filter=active', class={selected: filter === 'active'}) Active
-        li
-          a(href='/?filter=completed', class={selected: filter === 'completed'}) Completed
-      // Hidden if no completed items are left ↓
-      button.clear-completed(hx-post="/todos/clear-completed" hx-target='#todo-list') Clear completed
+      .filters
+        a.btn.btn-transition(href='/?filter=all', class={selected : filter === 'all'}) All
+        a.btn.btn-transition(href='/?filter=active', class={selected: filter === 'active'}) Active
+        a.btn.btn-transition(href='/?filter=completed', class={selected: filter === 'completed'}) Completed
+        // TODO: Hide if no completed items are left
+        a.btn.btn-transition(hx-post="/todos/clear-completed" hx-target='#todo-list') Clear completed
 
   include ./includes/footer
-  // Scripts here. Don't remove ↓
+  // Scripts here. Don't remove
   script(src="https://unpkg.com/htmx.org@1.9.6" integrity="sha384-FhXw7b6AlE/jyjlZH5iHa/tTe9EpJ1Y55RjcgPbjeWMskSxZt1v9qkxLJWNJaGni" crossorigin="anonymous")
   script(src="https://unpkg.com/hyperscript.org@0.9.11")
   script(src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js")

@@ -1,2 +1,2 @@
-form(hx-post="/todos/update/" + todo.id, hx-swap="outerHTML")
+form(hx-post="/todos/update/" + todo.id, hx-swap="outerHTML", style="margin-bottom: 2px")
   input.edit(type="text" name="name",value=todo.name)
