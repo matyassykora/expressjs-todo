@@ -1,7 +1,6 @@
-header.header.container
+header.header.d-flex.justify-content-end
     script. 
         const theme = localStorage.getItem('theme')
         theme && document.body.classList.add(theme)
     nav
-        .dark-mode-toggle
-            i.toggleTheme(class="fa-solid fa-lightbulb" _="on click toggle .dark-mode on body then if body matches .dark-mode set localStorage.theme to 'dark-mode' else set localStorage.theme to ''")
+        button.toggleTheme.fa-solid.fa-lightbulb(_="on click toggle .dark-mode on body then if body matches .dark-mode set localStorage.theme to 'dark-mode' else set localStorage.theme to ''")

@@ -1,8 +1,9 @@
-li(id='todo-' + todo.id, class={completed: todo.done === true})
-  .view
+- var todoDoneClass = "list-group-item-success"
+li.list-group-item.overflow-hidden(id='todo-' + todo.id, class={completed: todo.done === true}, class={[todoDoneClass]: todo.done === true})
+  .view.d-flex.gap-3
     input(type="hidden" name="ids" value=todo.id)
     input(type="hidden" name="completed" value=todo.done.toString())
     input(type="hidden" name="names" value=todo.name)
-    input.toggle(hx-patch='/todos/' + todo.id, type='checkbox', checked=todo.done, hx-target='#todo-' + todo.id, hx-swap="outerHTML" class="checked" _="on load set my.checked to " + todo.done + " then if my.checked toggle .strike-transition on next <label/>")
-    label.strike(hx-get='/todos/edit/' + todo.id, hx-target="#todo-" +  todo.id, hx-swap="outerHTML") #{todo.name}
-    button.destroy.fa-solid.fa-x(hx-delete='/todos/' + todo.id, _="on htmx:afterOnLoad remove #todo-" + todo.id )
+    input.toggle(hx-patch='/todos/' + todo.id, type='checkbox', checked=todo.done, hx-target='#todo-' + todo.id, hx-swap="outerHTML", class={checked: todo.done === true})
+    label.align-self-center.edit.flex-fill.strike(hx-get='/todos/edit/' + todo.id, hx-target="#todo-" +  todo.id, hx-swap="outerHTML", class={checked: todo.done === true}, _="on load set *text-decoration to 'line-through' unless I do not match .checked") #{todo.name}
+    button.btn.btn-danger.fa-solid.fa-x(hx-delete='/todos/' + todo.id, _="on htmx:afterOnLoad remove #todo-" + todo.id )

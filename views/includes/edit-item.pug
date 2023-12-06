@@ -1,2 +1,2 @@
-form(hx-post="/todos/update/" + todo.id, hx-swap="outerHTML", style="margin-bottom: 2px")
-  input.edit(type="text" name="name",value=todo.name)
+form.d-flex(hx-post="/todos/update/" + todo.id, hx-swap="outerHTML", style="margin-bottom: 2px")
+  input.edit.list-group-item.overflow-hidden.d-flex.flex-grow-1(type="text" name="name",value=todo.name)

@@ -1,42 +1,49 @@
 extends layouts/layout 
 
 block main
-  section.todoapp
-    include ./includes/header
-    section.top.container
-      .new-todo
-        .title
-          | todos
-          include ./includes/loading
-          // This should be `0 items left` by default
-          include includes/item-count
-        form(hx-post="/todos" hx-target="#todo-list" hx-swap="afterbegin" _="on htmx:afterOnLoad set #txtTodo.value to ''")
-          input#txtTodo.new-todo-input(name="todo" placeholder='What needs to be done?' autofocus='')
-    // This section should be hidden by default and shown when there are todos
-    section.main.container
-      //TODO: add this functionality
-      //input#toggle-all.toggle-all(type='checkbox')
-      //label(for='toggle-all') Mark all as complete
-      form.todo-list(hx-post="todos/reorder" hx-trigger="end" hx-swap="none")
-        ul#todo-list.todo-list
-          // These are here just to show the structure of the list items
-          // List items should get the class `editing` when editing and `completed` when marked as completed
-          each todo in todos
-            include includes/todo-item
+  body.container-fluid.row
+    .col-sm-3
+    section.todoapp.col-sm-6
+      include ./includes/header
+      section.top.d-flex.justify-content-center
+        .new-todo
+          .title
+            | todos
+            include ./includes/loading
+            include includes/item-count
+          form(hx-post="/todos" hx-target="#todo-list" hx-swap="afterbegin" _="on htmx:afterOnLoad set #txtTodo.value to ''")
+            input#txtTodo.new-todo-input(name="todo" placeholder='What needs to be done?' autofocus='')
+            // button.btn.btn-primary(type="submit") Add
+      // This section should be hidden by default and shown when there are todos
+      section.main
+        .filters.d-flex.justify-content-between
+          .btn-group
+            input#btnradio1.btn-check(type='radio' onclick="window.location='/?filter=all';" name='btnradio' autocomplete='off', checked=(filter === 'all' || filter == null))
+            label.btn.btn-outline-primary(for='btnradio1') All
+            
+            input#btnradio2.btn-check(type='radio' onclick="window.location='/?filter=active';" name='btnradio' autocomplete='off',checked=(filter === 'active'))
+            label.btn.btn-outline-primary(for='btnradio2') Active
 
-    // This footer should be hidden by default and shown when there are todos
-    section.bottom.container
-      // Remove this if you don't implement routing
-      .filters
-        a.btn.btn-transition(href='/?filter=all', class={selected : filter === 'all'}) All
-        a.btn.btn-transition(href='/?filter=active', class={selected: filter === 'active'}) Active
-        a.btn.btn-transition(href='/?filter=completed', class={selected: filter === 'completed'}) Completed
-        // TODO: Hide if no completed items are left
-        a.btn.btn-transition(hx-post="/todos/clear-completed" hx-target='#todo-list') Clear completed
+            input#btnradio3.btn-check(type='radio', onclick="window.location='/?filter=completed';",name='btnradio' autocomplete='off',checked=(filter === 'completed') )
+            label.btn.btn-outline-primary(for='btnradio3') Completed
 
-  include ./includes/footer
-  // Scripts here. Don't remove
-  script(src="https://unpkg.com/htmx.org@1.9.6" integrity="sha384-FhXw7b6AlE/jyjlZH5iHa/tTe9EpJ1Y55RjcgPbjeWMskSxZt1v9qkxLJWNJaGni" crossorigin="anonymous")
-  script(src="https://unpkg.com/hyperscript.org@0.9.11")
-  script(src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js")
-  script(src="js/sortable.js")
+          // TODO: Hide if no completed items are left
+          a.btn.btn-danger(hx-post="/todos/clear-completed" hx-target='#todo-list') Clear completed
+
+        //TODO: add this functionality
+        //input#toggle-all.toggle-all(type='checkbox')
+        //label(for='toggle-all') Mark all as complete
+        form.d-flex.justify-content-center.todo-list(hx-post="todos/reorder" hx-trigger="end" hx-swap="none")
+          ul#todo-list.todo-list.list-group.list-group-flush.flex-grow-1
+            // List items should get the class `editing` when editing and `completed` when marked as completed
+            each todo in todos
+              include includes/todo-item
+
+      section.bottom
+    .col-sm-3
+    include ./includes/footer
+    // Scripts here. Don't remove
+    script(src="https://unpkg.com/htmx.org@1.9.6" integrity="sha384-FhXw7b6AlE/jyjlZH5iHa/tTe9EpJ1Y55RjcgPbjeWMskSxZt1v9qkxLJWNJaGni" crossorigin="anonymous")
+    script(src="https://unpkg.com/hyperscript.org@0.9.11")
+    script(src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js")
+    script(src="js/sortable.js")
