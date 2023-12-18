@@ -1,21 +1,6 @@
-:root {
-    --color-dark: #0a0a13;
-    --color-light: #f1f5fa;
-}
-
-.dark-mode {
-    --color-light: #0a0a13;
-    --color-dark: #f1f5fa;
-}
-
 .html,
 body {
   height: 100%
-}
-
-body {
-    background-color: var(--color-light);
-    color: var(--color-dark);
 }
 
 .new-todo {

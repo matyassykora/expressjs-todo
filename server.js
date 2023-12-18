@@ -81,7 +81,7 @@ app.post('/todos', (req, res) => {
 // TODO: fix reordering while in 'active' filter deleting items
 // it's disabled for now
 /* 
-idea:  maybe keep a different list of todos for each filter mode and 
+maybe keep a different list of todos for each filter mode and 
 then sync when swapping modes?
 */
 app.post('/todos/reorder', (req, res) => {
@@ -169,10 +169,6 @@ app.post('/todos/clear-completed', (req, res) => {
   markup += template({ itemsLeft: getItemsLeft() });
   res.send(markup);
 });
-
-function pepa(index) {
- return index++ 
-}
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
