@@ -10,9 +10,9 @@ const { Pool } = require('pg');
 const pool = new Pool({
   user: 'postgres',
   host: 'localhost',
+  port: 5432,
   database: 'expressjs-todo-db',
   password: '1234',
-  port: 5432,
 })
 
 let todos = [];
@@ -28,18 +28,21 @@ const addTodo = async (todo) => {
 }
 
 const getTodosByState = async (done) => {
-  const res = await pool.query('SELECT id, name, done FROM todos where done = $1::boolean', [done]);
+  const res = await pool.query('SELECT id, name, done FROM todos where done = $1::boolean ORDER BY userorder', [done]);
   return res.rows;
 }
 
 const getAllTodos = async () => {
-  const res = await pool.query('SELECT * FROM todos ORDER BY pos');
+  const res = await pool.query('SELECT * FROM todos ORDER BY userorder');
   return res.rows;
 }
 
-const reorderTodos = async (position) => {
-  const text = 'UPDATE todos SET pos = pos+1 WHERE pos >= $1';
-  const values = [position];
+// TODO: this works but it updates the whole table...
+// maybe OK for a simple todo list ?
+// using the 3rd approach from https://begriffs.com/posts/2018-03-20-user-defined-order.html or similar is better
+const changeTodoOrder = async (order, id) => {
+  const text = 'UPDATE todos SET userorder = $1 WHERE id = $2';
+  const values = [order, id];
   return await pool.query(text, values);
 }
 
@@ -47,6 +50,11 @@ const deleteTodo = async (id) => {
   const text = 'DELETE FROM todos WHERE id = $1';
   const values = [id];
   return await pool.query(text, values);
+}
+
+const deleteCompletedTodos = async () => {
+  const res = await pool.query('DELETE FROM todos WHERE done = true');
+  return res.rows;
 }
 
 const updateTodo = async (id, name) => {
@@ -61,11 +69,9 @@ const toggleTodo = async (id) => {
   return await pool.query(text, values);
 }
 
-// const getItemsLeft = () => todos.filter(t => !t.done).length;
-const getItemsLeft = () => {
-  // const res = await pool.query('SELECT count(*) FROM todos where done = false');
-  // return res.rows[0].count
-  return 2;
+const getItemsLeft = async () => {
+  const res = await pool.query('SELECT count(*) FROM todos where done = false');
+  return res.rows[0].count
 }
 
 const app = express();
@@ -97,7 +103,7 @@ app.get('/', async (req, res) => {
   res.render('index', {
     todos: filteredTodos,
     filter,
-    itemsLeft: getItemsLeft()
+    itemsLeft: await getItemsLeft()
   });
 });
 
@@ -112,17 +118,10 @@ app.post('/todos', async (req, res) => {
   let template = pug.compileFile('views/includes/todo-item.pug');
   let markup = template({ todo: newTodo });
   template = pug.compileFile('views/includes/item-count.pug');
-  markup += template({ itemsLeft: getItemsLeft() });
+  markup += template({ itemsLeft: await getItemsLeft() });
   res.send(markup);
 });
 
-// TODO: fix reordering while in 'active' filter deleting items
-// it's disabled for now
-/* 
-maybe keep a different list of todos for each filter mode and 
-then sync when swapping modes?
-*/
-// TODO: maybe use the 3rd approach from https://begriffs.com/posts/2018-03-20-user-defined-order.html ?
 app.post('/todos/reorder', async (req, res) => {
   var { ids } = req.body
   var { names } = req.body
@@ -135,7 +134,8 @@ app.post('/todos/reorder', async (req, res) => {
       name: names[i],
       done: completed[i] == "true"
     };
-    newTodos.push(newTodo)
+    newTodos.push(newTodo);
+    changeTodoOrder(i, newTodo.id);
   }
 
   const filteredArray = newTodos.filter(value => !todos.includes(value));
@@ -177,7 +177,7 @@ app.patch('/todos/:id', async (req, res) => {
   let template = pug.compileFile('views/includes/todo-item.pug');
   let markup = template({ todo });
   template = pug.compileFile('views/includes/item-count.pug');
-  markup += template({ itemsLeft: getItemsLeft() });
+  markup += template({ itemsLeft: await getItemsLeft() });
   res.send(markup);
 });
 
@@ -190,7 +190,7 @@ app.post('/todos/update/:id', async (req, res) => {
   let template = pug.compileFile('views/includes/todo-item.pug');
   let markup = template({ todo });
   template = pug.compileFile('views/includes/item-count.pug');
-  markup += template({ itemsLeft: getItemsLeft() });
+  markup += template({ itemsLeft: await getItemsLeft() });
   res.send(markup);
 });
 
@@ -200,17 +200,18 @@ app.delete('/todos/:id', async (req, res) => {
   var filteredArray = todos.filter(e => e.id !== id)
   todos = filteredArray
   const template = pug.compileFile('views/includes/item-count.pug');
-  const markup = template({ itemsLeft: getItemsLeft() });
+  const markup = template({ itemsLeft: await getItemsLeft() });
   res.send(markup);
 });
 
-app.post('/todos/clear-completed', (req, res) => {
+app.post('/todos/clear-completed', async (req, res) => {
   const newTodos = todos.filter(t => !t.done);
+  deleteCompletedTodos();
   todos = [...newTodos];
   let template = pug.compileFile('views/includes/todo-list.pug');
   let markup = template({ todos });
   template = pug.compileFile('views/includes/item-count.pug');
-  markup += template({ itemsLeft: getItemsLeft() });
+  markup += template({ itemsLeft: await getItemsLeft() });
   res.send(markup);
 });
 

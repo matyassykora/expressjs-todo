@@ -1,2 +1,3 @@
+// TODO: look into text field not being clickable in firefox but fine in chrome
 form.d-flex(hx-post="/todos/update/" + todo.id, hx-swap="outerHTML", style="margin-bottom: 2px")
   input.edit.list-group-item.overflow-hidden.d-flex.flex-grow-1.my-1(type="text" name="name",value=todo.name)
