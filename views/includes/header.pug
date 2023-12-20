@@ -1,9 +1,6 @@
 header.header.d-flex.justify-content-end
-    script. 
-        const theme = localStorage.getItem('theme');
-        if ( theme === 'dark' ) {
-            theme && document.body.setAttribute('data-bs-theme', theme);
-        }
     nav
-        button.btn.btn-outline-warning(_="on click toggle [@data-bs-theme=dark] on body then if body matches [@data-bs-theme=dark] set localStorage.theme to 'dark' else set localStorage.theme to 'light'")
+        label.btn.btn-outline-warning(for="themeCheck")
+            input#themeCheck(type="checkbox" onclick="switchTheme();" hidden)
             i Light/Dark
+    script(src="js/themeSwitcher.js")

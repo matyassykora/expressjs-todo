@@ -1,7 +1,7 @@
 extends layouts/layout 
 
 block main
-  body.container-fluid.row
+  body.container-fluid.row(hx-history="none")
     .col-sm-3
     section.todoapp.col-sm-6
       include ./includes/header
@@ -9,34 +9,34 @@ block main
         .new-todo
           .title
             | todos
-            include ./includes/loading
+            include includes/loading
             include includes/item-count
-            // FIXME: adding a new todo while in `completed` filter
-          form(hx-post="/todos" hx-target="#todo-list" hx-swap="beforeend" _="on htmx:afterOnLoad set #txtTodo.value to ''")
+          // FIXME: todo always gets appended, even while in `completed` filter
+          form(hx-select-oob="#todo-count" hx-indicator="#spinner" hx-post="/todos" hx-target="#todo-list" hx-swap="beforeend" _="on htmx:afterOnLoad set #txtTodo.value to ''")
             input#txtTodo.new-todo-input(name="todo" placeholder='What needs to be done?' autofocus='')
             // button.btn.btn-primary(type="submit") Add
       section.main
         .filters.d-flex.justify-content-between
-          .btn-group
-            input#btnradio1.btn-check(type='radio' onclick="window.location='/?filter=all';" name='btnradio' autocomplete='off', checked=(filter === 'all' || filter == null))
-            label.btn.btn-outline-primary(for='btnradio1') All
+          .btn-group(hx-boost="true")
+            input#btnradio1.btn-check(type='radio' name='btnradio' autocomplete='off' checked=(filter === 'all' || filter == null))
+            a.btn.btn-outline-primary(href="/?filter=all") All
             
-            input#btnradio2.btn-check(type='radio' onclick="window.location='/?filter=active';" name='btnradio' autocomplete='off',checked=(filter === 'active'))
-            label.btn.btn-outline-primary(for='btnradio2') Active
+            input#btnradio2.btn-check(type='radio' name='btnradio' autocomplete='off' checked=(filter === 'active'))
+            a.btn.btn-outline-primary(href="/?filter=active") Active
 
-            input#btnradio3.btn-check(type='radio', onclick="window.location='/?filter=completed';",name='btnradio' autocomplete='off',checked=(filter === 'completed') )
-            label.btn.btn-outline-primary(for='btnradio3') Completed
+            input#btnradio3.btn-check(type='radio' name='btnradio' autocomplete='off' checked=(filter === 'completed'))
+            a.btn.btn-outline-primary(href="/?filter=completed") Completed
 
           // TODO: Hide if no completed items are left ?
-          a.btn.btn-danger(hx-post="/todos/clear-completed" hx-target='#todo-list') Clear completed
+          a.btn.btn-danger(hx-select-oob="#todo-count" hx-post="/todos/clear-completed" hx-target='#todo-list') Clear completed
 
         //TODO: add this functionality ?
         //input#toggle-all.toggle-all(type='checkbox')
         //label(for='toggle-all') Mark all as complete
-        form.d-flex.justify-content-center.todo-list(hx-post="todos/reorder" hx-trigger="end" hx-swap="none")
+        form.d-flex.justify-content-center.todo-list(hx-select-oob="#todo-count" hx-indicator="#spinner" hx-post="todos/reorder" hx-trigger="end" hx-swap="none")
           ul#todo-list.todo-list.list-group.list-group-flush.flex-grow-1
             each todo in todos
-              include includes/todo-item
+              include ./includes/todo-item
 
       section.bottom
     .col-sm-3

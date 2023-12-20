@@ -82,9 +82,11 @@ app.use(bodyParser.json());
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+let filter;
+
 app.get('/', async (req, res) => {
   todos = await getAllTodos();
-  const { filter } = req.query;
+  filter = req.query.filter;
   let filteredTodos = [];
   switch (filter) {
     case 'all':
@@ -115,6 +117,14 @@ app.post('/todos', async (req, res) => {
     done: false
   };
   await addTodo(newTodo);
+  const url = req.get('HX-Current-URL');
+  const slug = url.split('=').pop();
+  if (slug == 'completed') {
+    let template = pug.compileFile('views/includes/item-count.pug');
+    let markup = template({ itemsLeft: await getItemsLeft() });
+    res.send(markup);
+    return;
+  }
   let template = pug.compileFile('views/includes/todo-item.pug');
   let markup = template({ todo: newTodo });
   template = pug.compileFile('views/includes/item-count.pug');
@@ -153,9 +163,6 @@ app.post('/todos/reorder', async (req, res) => {
   else {
 
   }
-  // await changeOrder(todos);
-  // await reorderTodos(2);
-
   let template = pug.compileFile('views/includes/todo-list.pug');
   let markup = template({ todos });
   res.send(markup);
@@ -205,9 +212,17 @@ app.delete('/todos/:id', async (req, res) => {
 });
 
 app.post('/todos/clear-completed', async (req, res) => {
+  const url = req.get('HX-Current-URL');
+  const slug = url.split('=').pop();
   const newTodos = todos.filter(t => !t.done);
   deleteCompletedTodos();
   todos = [...newTodos];
+  if (slug == 'completed') {
+    let template = pug.compileFile('views/includes/item-count.pug');
+    let markup = template({ itemsLeft: await getItemsLeft() });
+    res.send(markup);
+    return;
+  }
   let template = pug.compileFile('views/includes/todo-list.pug');
   let markup = template({ todos });
   template = pug.compileFile('views/includes/item-count.pug');
