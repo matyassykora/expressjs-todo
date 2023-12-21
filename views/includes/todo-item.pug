@@ -1,9 +1,9 @@
 - var todoDoneClass = "list-group-item-success"
-li.list-group-item.overflow-hidden(id='todo-' + todo.id, class={completed: todo.done === true}, class={[todoDoneClass]: todo.done === true})
+li.list-group-item.overflow-hidden(hx-indicator="#spinner" hx-target="closest li" hx-swap="outerHTML" id='todo-' + todo.id, class={completed: todo.done === true}, class={[todoDoneClass]: todo.done === true})
   .view.d-flex.gap-3
     input(type="hidden" name="ids" value=todo.id)
     input(type="hidden" name="completed" value=todo.done.toString())
     input(type="hidden" name="names" value=todo.name)
-    input.toggle(hx-select-oob="#todo-count" hx-indicator="#spinner" hx-patch='/todos/' + todo.id, type='checkbox', checked=todo.done, hx-target='#todo-' + todo.id, hx-swap="outerHTML", class={checked: todo.done === true}, _="on load set my.checked to " + todo.done)
+    input.toggle(hx-select-oob="#todo-count" hx-patch='/todos/' + todo.id, type='checkbox', checked=todo.done, hx-target='#todo-' + todo.id, hx-swap="outerHTML", class={checked: todo.done === true}, _="on load set my.checked to " + todo.done)
     label.align-self-center.edit.flex-fill.strike(hx-select-oob="#todo-count" hx-indicator="#spinner" hx-get='/todos/edit/' + todo.id, hx-target="#todo-" +  todo.id, hx-swap="outerHTML", class={checked: todo.done === true}, _="on load set *text-decoration to 'line-through' unless I do not match .checked") #{todo.name}
-    button.btn.btn-danger(hx-select-oob="#todo-count" hx-indicator="#spinner" hx-delete='/todos/' + todo.id, _="on htmx:afterOnLoad remove #todo-" + todo.id ) X
+    button.btn.btn-danger(hx-select-oob="#todo-count" hx-indicator="#spinner" hx-delete='/todos/' + todo.id) X

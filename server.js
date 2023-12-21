@@ -116,6 +116,7 @@ app.post('/todos', async (req, res) => {
     name: todo,
     done: false
   };
+  todos.push(newTodo);
   await addTodo(newTodo);
   const url = req.get('HX-Current-URL');
   const slug = url.split('=').pop();
